@@ -1,0 +1,16 @@
+{
+  "name": "tokenizacion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "npm run start-backend && npm run start-frontend",
+    "dev-backend": "STAGE=dev cd backend && npm run dev",
+    "prod-backend": "STAGE=prod cd backend && npm start",
+    "start-frontend": "cd frontend && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

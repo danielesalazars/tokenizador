@@ -1,0 +1,70 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:12.17-alpine3.19
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  pgAdmin:
+    depends_on:
+      - postgres
+    image: elestio/pgadmin:REL-8_2
+    container_name: pgAdmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${POSTGRES_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - 8080:80
+
+  redis:
+    image: redis:alpine3.19
+    container_name: redis
+    restart: always
+    volumes:
+      - ./redis:/data
+    ports:
+      - 6379:6379
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: backend
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+      - pgAdmin
+    volumes:
+      - ./backend:/app
+      - ./.env:/app/.env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  postgres:
+    external: false
+  pgadmin:
+    external: false
+  redis:
+    external: false
