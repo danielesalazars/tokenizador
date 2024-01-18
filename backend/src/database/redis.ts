@@ -10,17 +10,18 @@ const redis = new Redis({
   db: Number(process.env.REDIS_DB),
 });
 
-redis.on("connect", () => {
-  console.log("Conexión a Redis establecida correctamente.");
-});
+// redis.on("connect", () => {
+//   console.log("Conexión a Redis establecida correctamente.");
+// });
 
 redis.on("error", (error) => {
   console.error("Error en la conexión a Redis:", error);
 });
 
-if (process.env.STAGE === "dev") {
-  afterAll(async () => {
-    await redis.quit();
-  });
-}
+// console.log(process.env.STAGE);
+// if (process.env.STAGE === "dev") {
+//   afterAll(async () => {
+//     await redis.quit();
+//   });
+// }
 export default redis;

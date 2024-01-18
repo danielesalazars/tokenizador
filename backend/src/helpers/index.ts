@@ -72,6 +72,11 @@ export const sendErrorResponse = (
   message?: { [key: string]: string },
   errors?: { [key: string]: string }
 ) => {
+  const response = { status, message, errors };
+  const jsonResponse = JSON.stringify(response);
+
   res.writeHead(status, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ status, message, errors }));
+  res.end(jsonResponse);
+
+  return response;
 };

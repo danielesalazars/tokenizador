@@ -117,7 +117,6 @@ export const recoverCardData = async (
   res: ServerResponse
 ): Promise<void> => {
   try {
-    console.log("hola mundo");
     let body = "";
 
     req.on("data", (chunk) => {
@@ -134,16 +133,16 @@ export const recoverCardData = async (
 
     const tokenData = await TokenService.recoverCardData(token);
 
-    if (!tokenData) {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          data: tokenData,
-          status: 400,
-          message: "Token expirado",
-        })
-      );
-    }
+    // if (!tokenData) {
+    //   res.writeHead(400, { "Content-Type": "application/json" });
+    //   res.end(
+    //     JSON.stringify({
+    //       data: tokenData,
+    //       status: 400,
+    //       message: "Token expirado",
+    //     })
+    //   );
+    // }
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(

@@ -1,8 +1,8 @@
+import { IncomingMessage, ServerResponse } from "http";
 import {
   generateTokenCard,
   recoverCardData,
 } from "../controllers/TokenController";
-import { IncomingMessage, ServerResponse } from "http";
 
 jest.mock("../services/TokenService", () => ({
   generateTokenCard: jest.fn(),
@@ -16,6 +16,11 @@ const mockRecoverCardData = require("../services/TokenService")
   .recoverCardData as jest.Mock;
 
 describe("TokenController Tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGenerateTokenCard.mockClear();
+  });
+
   test("generateTokenCard should return success response", async () => {
     const req: Partial<IncomingMessage> = {
       on: jest.fn().mockImplementation((event, callback) => {
@@ -56,6 +61,7 @@ describe("TokenController Tests", () => {
       })
     );
   });
+
   test("generateTokenCard should return error response", async () => {
     const req: Partial<IncomingMessage> = {
       on: jest.fn().mockImplementation((event, callback) => {
@@ -79,8 +85,12 @@ describe("TokenController Tests", () => {
       end: jest.fn(),
     };
 
-    const mockTokenValidate = "mockedToken";
-    mockGenerateTokenCard.mockResolvedValue(mockTokenValidate);
+    const mockValidationError = {
+      expirationYear: "El año 2023 no es válido.",
+    };
+    mockGenerateTokenCard.mockRejectedValue({
+      validationError: mockValidationError,
+    });
 
     await generateTokenCard(req as IncomingMessage, res as ServerResponse);
 
@@ -92,7 +102,7 @@ describe("TokenController Tests", () => {
       JSON.stringify({
         status: 400,
         message: "Error de validación en los datos",
-        error: expect.any(Object),
+        error: mockValidationError,
       })
     );
   });
@@ -133,6 +143,7 @@ describe("TokenController Tests", () => {
     expect(res.writeHead).toHaveBeenCalledWith(200, {
       "Content-Type": "application/json",
     });
+
     expect(res.end).toHaveBeenCalledWith(
       JSON.stringify({
         data: mockTokenData,
@@ -141,6 +152,7 @@ describe("TokenController Tests", () => {
       })
     );
   });
+
   test("recoverCardData should return error response", async () => {
     const req: Partial<IncomingMessage> = {
       on: jest.fn().mockImplementation((event, callback) => {
